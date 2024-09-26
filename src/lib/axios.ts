@@ -1,6 +1,7 @@
 import axios, { Axios, AxiosResponse } from 'axios';
 import { IAuthRequest } from '@/types/IAuthRequest';
 import { ITokenResponse } from '@/types/ITokenResponse';
+import { IIntraUser } from '@/types/IIntraUser';
 
 class AxiosClient {
   private readonly instance: Axios;
@@ -33,7 +34,7 @@ class AxiosClient {
     });
   }
 
-  public async getUser() {
+  public async getUser(): Promise<AxiosResponse<IIntraUser>> {
     if (!this.token) throw new Error('No token available');
     return this.instance.get('/me');
   }

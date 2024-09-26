@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/auth-provider';
 import axios from '@/lib/axios';
 import BrowserAPI from '@/lib/browser.api';
+import { mapUser } from '@/utilities/map-user';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -45,7 +46,8 @@ export default function RootLayout({
           setAccessToken(res.data.access_token);
           BrowserAPI.setTokens(res.data.access_token, res.data.refresh_token);
           axios.getUser().then((res) => {
-            console.log(res.data);
+            const user = mapUser(res.data);
+            console.log(user);
           });
         });
       }
