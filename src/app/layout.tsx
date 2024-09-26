@@ -8,6 +8,7 @@ import { useAuth } from '@/context/auth-provider';
 import axios from '@/lib/axios';
 import BrowserAPI from '@/lib/browser.api';
 import { mapUser } from '@/utilities/map-user';
+import { NextUIProvider } from '@nextui-org/react';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -59,9 +60,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen`}
       >
-        {children}
+        <NextUIProvider>{children}</NextUIProvider>
       </body>
     </html>
   );
