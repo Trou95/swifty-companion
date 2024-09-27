@@ -38,9 +38,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen`}
       >
-        <NextUIProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </NextUIProvider>
+        <AuthProvider>
+          <NextUIProvider>{children}</NextUIProvider>
+        </AuthProvider>
       </body>
     </html>
   );

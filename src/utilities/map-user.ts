@@ -5,6 +5,7 @@ export const mapUser = (user: IIntraUser): IUser => {
   const cursusUser = user.cursus_users[1];
   return {
     id: user.id,
+    login: user.login,
     fullName: user.displayname,
     email: user.email,
     image: user.image.link,
@@ -18,6 +19,7 @@ export const mapUser = (user: IIntraUser): IUser => {
         id: project.project.id,
         name: project.project.name,
         slug: project.project.slug,
+        created_at: project.created_at,
       };
     }),
   };

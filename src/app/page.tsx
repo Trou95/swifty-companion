@@ -4,6 +4,7 @@ import axios from '@/lib/axios';
 import BrowserAPI from '@/lib/browser.api';
 import { mapUser } from '@/utilities/map-user';
 import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
@@ -11,10 +12,10 @@ export default function Home() {
   const { user, setUser } = useAuth();
   const { accessToken, setAccessToken } = useAuth();
   const searchParams = useSearchParams();
+  const { push } = useRouter();
 
   useEffect(() => {
     console.log(user);
-    if (user) return;
 
     const token = localStorage.getItem('access_token');
     if (!token) {
@@ -29,6 +30,7 @@ export default function Home() {
             const user = mapUser(res.data);
             setUser(user);
             console.log(user);
+            push('/account');
           });
         });
       }
