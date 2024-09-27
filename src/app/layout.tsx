@@ -4,7 +4,7 @@ import localFont from 'next/font/local';
 import './globals.css';
 import { ReactNode, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useAuth } from '@/context/auth-provider';
+import { AuthProvider, useAuth } from '@/context/auth-provider';
 import axios from '@/lib/axios';
 import BrowserAPI from '@/lib/browser.api';
 import { mapUser } from '@/utilities/map-user';
@@ -33,36 +33,14 @@ export default function RootLayout({
 }: Readonly<{
   children: ReactNode;
 }>) {
-  const { accessToken, setAccessToken } = useAuth();
-  const searchParams = useSearchParams();
-
-  const handleAuth = () => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      const code = searchParams.get('code');
-      if (!code) window.location.href = process.env.NEXT_PUBLIC_AUTH_URL!;
-      else {
-        axios.Authenticate(code).then((res) => {
-          axios.setToken(res.data.access_token);
-          setAccessToken(res.data.access_token);
-          BrowserAPI.setTokens(res.data.access_token, res.data.refresh_token);
-          axios.getUser().then((res) => {
-            const user = mapUser(res.data);
-            console.log(user);
-          });
-        });
-      }
-    }
-  };
-
-  useEffect(handleAuth, [accessToken]);
-
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen`}
       >
-        <NextUIProvider>{children}</NextUIProvider>
+        <NextUIProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </NextUIProvider>
       </body>
     </html>
   );

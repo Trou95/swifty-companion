@@ -1,26 +1,22 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
-
-interface IAuthContext {
-  accessToken: string;
-  setAccessToken: (token: string) => void;
-  refreshToken: string;
-  setRefreshToken: (token: string) => void;
-}
-
-const AuthContext = createContext<IAuthContext>({
-  accessToken: '',
-  setAccessToken: () => {},
-  refreshToken: '',
-  setRefreshToken: () => {},
-});
+import { ReactNode, useContext, useState } from 'react';
+import AuthContext from './auth-context';
+import { IUser } from '@/types/IUser';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [accessToken, setAccessToken] = useState<string>('');
   const [refreshToken, setRefreshToken] = useState<string>('');
+  const [user, setUser] = useState<IUser | null>(null);
 
   return (
     <AuthContext.Provider
-      value={{ accessToken, setAccessToken, refreshToken, setRefreshToken }}
+      value={{
+        accessToken,
+        setAccessToken,
+        refreshToken,
+        setRefreshToken,
+        user,
+        setUser,
+      }}
     >
       {children}
     </AuthContext.Provider>
