@@ -2,11 +2,15 @@
 import { useAuth } from '@/context/auth-provider';
 import axiosClient from '@/lib/axios';
 import BrowserAPI from '@/lib/browser.api';
+import { ITokenResponse } from '@/types/ITokenResponse';
 import { mapUser } from '@/utilities/map-user';
+import { AxiosResponse } from 'axios';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { ReactNode, Suspense, useEffect } from 'react';
 
-export default function Layout({ children }: any) {
+export default function Layout({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   const { user, setUser } = useAuth();
   const { push } = useRouter();
   useEffect(() => {
@@ -23,13 +27,22 @@ export default function Layout({ children }: any) {
               const user = mapUser(res.data);
               setUser(user);
             })
-            .catch(() => {
-              push('/');
+            .catch((error: any) => {
+              if (error.isRefresToken) {
+                axiosClient
+                  .refreshToken()
+                  .then((res: AxiosResponse<ITokenResponse>) => {
+                    BrowserAPI.setTokens(
+                      res.data.access_token,
+                      res.data.refresh_token
+                    );
+                  });
+              }
             });
         }
       });
     }
-  }, []);
+  });
 
-  return <>{children}</>;
+  return <Suspense>{children}</Suspense>;
 }

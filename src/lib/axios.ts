@@ -1,4 +1,4 @@
-import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
+import axios, { Axios, AxiosResponse } from 'axios';
 import { IAuthRequest } from '@/types/IAuthRequest';
 import { ITokenResponse } from '@/types/ITokenResponse';
 import { IIntraUser } from '@/types/IIntraUser';
@@ -28,8 +28,12 @@ class AxiosClient {
       function (response) {
         return response;
       },
-      function (error: AxiosError) {
-        if (error.status) {
+      function (error: any) {
+        if (error.status == 401) {
+          if (error.response.data.message == 'The access token expired') {
+            console.log('token expired');
+            return Promise.reject({ ...error, isRefresToken: true });
+          }
           BrowserAPI.clearTokens();
           console.log('tokens reset');
         }
@@ -55,6 +59,15 @@ class AxiosClient {
   public setToken(token: string) {
     this.token = token;
     this.instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }
+
+  public async refreshToken() {
+    const refreshToken = await BrowserAPI.getRefreshToken();
+    return axios.post(process.env.NEXT_PUBLIC_INTRA_AUTH_URL!, {
+      ...this.authInfo,
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+    });
   }
 }
 

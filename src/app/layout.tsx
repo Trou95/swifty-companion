@@ -1,13 +1,9 @@
 'use client';
-import type { Metadata } from 'next';
+//import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
-import { ReactNode, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { AuthProvider, useAuth } from '@/context/auth-provider';
-import axios from '@/lib/axios';
-import BrowserAPI from '@/lib/browser.api';
-import { mapUser } from '@/utilities/map-user';
+import { ReactNode } from 'react';
+import { AuthProvider } from '@/context/auth-provider';
 import { NextUIProvider } from '@nextui-org/react';
 
 const geistSans = localFont({

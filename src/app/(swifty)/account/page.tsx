@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect } from 'react';
-import { Avatar, Card, Badge, Button, Chip } from '@nextui-org/react';
+import { Avatar, Card, Badge, Chip } from '@nextui-org/react';
 import { useAuth } from '@/context/auth-provider';
 import BrowserAPI from '@/lib/browser.api';
 import { useRouter } from 'next/navigation';
