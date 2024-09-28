@@ -1,41 +1,21 @@
 'use client';
-import { useAuth } from '@/context/auth-provider';
-import axios from '@/lib/axios';
-import BrowserAPI from '@/lib/browser.api';
-import { mapUser } from '@/utilities/map-user';
-import { useSearchParams } from 'next/navigation';
+import { Button } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [iframeSrc, setIframeSrc] = useState<string | null>(null);
-  const { user, setUser } = useAuth();
-  const { accessToken, setAccessToken } = useAuth();
-  const searchParams = useSearchParams();
   const { push } = useRouter();
 
-  useEffect(() => {
-    console.log(user);
-
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      const code = searchParams.get('code');
-      if (!code) window.location.href = process.env.NEXT_PUBLIC_AUTH_URL!;
-      else {
-        axios.Authenticate(code).then((res) => {
-          axios.setToken(res.data.access_token);
-          setAccessToken(res.data.access_token);
-          BrowserAPI.setTokens(res.data.access_token, res.data.refresh_token);
-          axios.getUser().then((res) => {
-            const user = mapUser(res.data);
-            setUser(user);
-            console.log(user);
-            push('/account');
-          });
-        });
-      }
-    }
-  }, []);
-
-  return <div>{user?.fullName}</div>;
+  return (
+    <div className="w-full h-screen bg-gray-200 flex flex-col justify-center items-center gap-2">
+      <h2 className="font-bold text-black text-2xl">Swifty Companion</h2>
+      <Button
+        color="primary"
+        onClick={() => {
+          push('/login');
+        }}
+      >
+        Login
+      </Button>
+    </div>
+  );
 }

@@ -14,7 +14,7 @@ export const mapUser = (user: IIntraUser): IUser => {
     skills: cursusUser.skills,
     projects: user.projects_users.map((project) => {
       return {
-        final_mark: project.final_mark,
+        final_mark: project.final_mark || 0,
         status: project.status,
         id: project.project.id,
         name: project.project.name,

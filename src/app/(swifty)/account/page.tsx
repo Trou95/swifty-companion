@@ -2,16 +2,31 @@
 import React, { useEffect } from 'react';
 import { Avatar, Card, Badge, Button, Chip } from '@nextui-org/react';
 import { useAuth } from '@/context/auth-provider';
+import BrowserAPI from '@/lib/browser.api';
+import { useRouter } from 'next/navigation';
 
 export default function AccountPage() {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
+  const { push } = useRouter();
 
   useEffect(() => {
     console.log(user);
   }, [user]);
 
+  const projectStatusColor = (status: string) => {
+    if (status == 'finished') return 'success';
+    if (status == 'in_progress') return 'primary';
+    if (status == 'creating_group') return 'secondary';
+    return 'default';
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    BrowserAPI.clearTokens().then(() => push('/'));
+  };
+
   return (
-    <div className="w-full bg-gray-100 min-h-screen p-4">
+    <div className="bg-gray-100 max-w-md min-h-screen relative">
       <Card className="mx-auto">
         <Card>
           <div className="flex flex-row items-center space-x-4 pb-2 px-2">
@@ -53,7 +68,10 @@ export default function AccountPage() {
                         <h3 className="font-medium text-teal-600">
                           {project.name}
                         </h3>
-                        <Chip color={'success'} variant="bordered">
+                        <Chip
+                          color={projectStatusColor(project.status)}
+                          variant="bordered"
+                        >
                           {project.status}
                         </Chip>
                       </div>
@@ -97,6 +115,14 @@ export default function AccountPage() {
           </div>
         </Card>
       </Card>
+      <div className="w-full max-w-md min-h-10 bg-slate-400/80 backdrop-blur-md fixed bottom-0 ">
+        <ul className="h-full flex items-center">
+          <li className="w-1/2 p-2 bg-blue-600/80 text-center">Profil</li>
+          <li className="w-1/2 p-2 text-center" onClick={handleLogout}>
+            Çıkış
+          </li>
+        </ul>
+      </div>
     </div>
   );
 }

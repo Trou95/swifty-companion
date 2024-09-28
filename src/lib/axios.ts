@@ -1,7 +1,8 @@
-import axios, { Axios, AxiosResponse } from 'axios';
+import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import { IAuthRequest } from '@/types/IAuthRequest';
 import { ITokenResponse } from '@/types/ITokenResponse';
 import { IIntraUser } from '@/types/IIntraUser';
+import BrowserAPI from './browser.api';
 
 class AxiosClient {
   private readonly instance: Axios;
@@ -23,6 +24,18 @@ class AxiosClient {
       client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET!,
       redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI!,
     };
+    this.instance.interceptors.response.use(
+      function (response) {
+        return response;
+      },
+      function (error: AxiosError) {
+        if (error.status) {
+          BrowserAPI.clearTokens();
+          console.log('tokens reset');
+        }
+        return Promise.reject(error);
+      }
+    );
   }
 
   public async Authenticate(
@@ -46,4 +59,5 @@ class AxiosClient {
 }
 
 const axiosClient = new AxiosClient();
+
 export default axiosClient;
