@@ -1,6 +1,6 @@
 'use client';
 import { useAuth } from '@/context/auth-provider';
-import axios from '@/lib/axios';
+//import axios from '@/lib/axios';
 import BrowserAPI from '@/lib/browser.api';
 import { mapUser } from '@/utilities/map-user';
 import { useSearchParams } from 'next/navigation';
