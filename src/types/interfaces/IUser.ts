@@ -1,5 +1,5 @@
-import { IProject } from '@/types/IProject';
-import { ISkill } from '@/types/ISkill';
+import { IProject } from '@/types/interfaces/IProject';
+import { ISkill } from '@/types/interfaces/ISkill';
 
 export interface IUser {
   id: number;

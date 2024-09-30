@@ -1,5 +1,5 @@
-import { IIntraUser } from '@/types/IIntraUser';
-import { IUser } from '@/types/IUser';
+import { IIntraUser } from '@/types/interfaces/IIntraUser';
+import { IUser } from '@/types/interfaces/IUser';
 
 export const mapUser = (user: IIntraUser): IUser => {
   const cursusUser = user.cursus_users[1];

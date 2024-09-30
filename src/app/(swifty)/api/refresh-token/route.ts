@@ -4,18 +4,19 @@ import axios from 'axios';
 
 export async function POST(req: Request) {
   const res = await req.json();
-  const { code } = res;
+  const { refresh_token } = res;
 
-  if (!code) {
-    return NextResponse.json({ error: 'No code provided' }, { status: 400 });
+  if (!refresh_token) {
+    return NextResponse.json({ error: 'No token provided' }, { status: 400 });
   }
 
   try {
     const tokenResponse = await axios.post(
       process.env.NEXT_PUBLIC_INTRA_AUTH_URL!,
       {
-        ...axiosClient.authInfo,
-        code,
+        client_id: process.env.NEXT_PUBLIC_INTRA_CLIENT_ID,
+        grant_type: 'refresh_token',
+        refresh_token: refresh_token,
       }
     );
     return NextResponse.json(tokenResponse.data, { status: 200 });

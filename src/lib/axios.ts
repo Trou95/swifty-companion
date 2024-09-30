@@ -1,44 +1,44 @@
 import axios, { Axios, AxiosResponse } from 'axios';
-import { IAuthRequest } from '@/types/IAuthRequest';
-import { ITokenResponse } from '@/types/ITokenResponse';
-import { IIntraUser } from '@/types/IIntraUser';
+import { IAuthRequest } from '@/types/interfaces/IAuthRequest';
+import { ITokenResponse } from '@/types/interfaces/ITokenResponse';
+import { IIntraUser } from '@/types/interfaces/IIntraUser';
 import BrowserAPI from './browser.api';
+import { API_ROUTES } from '@/types/enums/api-routes';
 
 class AxiosClient {
-  private readonly instance: Axios;
-  private readonly authInfo: Omit<IAuthRequest, 'code'>;
-  private token: string | undefined;
+  private readonly _instance: Axios;
+  private readonly _authInfo: Omit<IAuthRequest, 'code'>;
+  private _token: string | null = null;
 
   constructor() {
-    this.instance = axios.create({
+    this._instance = axios.create({
       baseURL: process.env.NEXT_PUBLIC_INTRA_API_URL,
       headers: {
         'Content-Type': 'application/json',
-        cache: 'no-cache',
       },
       //withCredentials: true,
     });
 
-    this.authInfo = {
+    this._authInfo = {
       grant_type: 'authorization_code',
       client_id: process.env.NEXT_PUBLIC_CLIENT_ID!,
       client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET!,
       redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI!,
     };
-    this.instance.interceptors.response.use(
+
+    this._instance.interceptors.response.use(
       function (response) {
         return response;
       },
       function (error: any) {
-        if (error.status == 401) {
-          if (error.response.data.message == 'The access token expired') {
-            console.log('token expired');
-            return Promise.reject({ ...error, isRefresToken: true });
+        if (typeof window === 'undefined') {
+          //console.log(error.response);
+          if (error.response.status == 401) {
+            return Promise.reject(error);
           }
-          BrowserAPI.clearTokens();
-          console.log('tokens reset');
+        } else {
+          return Promise.reject(error);
         }
-        return Promise.reject(error);
       }
     );
   }
@@ -46,30 +46,64 @@ class AxiosClient {
   public async Authenticate(
     code: string
   ): Promise<AxiosResponse<ITokenResponse>> {
-    return axios.post(process.env.NEXT_PUBLIC_INTRA_AUTH_URL!, {
-      ...this.authInfo,
-      code,
-    });
+    try {
+      const tokenResponse = await axios.post(API_ROUTES.TOKEN, {
+        code,
+      });
+      this._token = tokenResponse.data.access_token;
+      return tokenResponse;
+    } catch (error) {
+      return Promise.reject(error);
+    }
   }
 
   public async getUser(): Promise<AxiosResponse<IIntraUser>> {
-    if (!this.token) throw new Error('No token available');
-    return this.instance.get('/me');
-  }
-
-  public setToken(token: string) {
-    this.token = token;
-    this.instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    try {
+      if (!this._token) this._token = await this.getAccessToken();
+      return await axios.post(API_ROUTES.ME, {
+        access_token: this._token,
+      });
+    } catch (error: any) {
+      error = this.getError(error);
+      return Promise.reject(error);
+    }
   }
 
   public async refreshToken() {
     const refreshToken = await BrowserAPI.getRefreshToken();
-    return axios.post(process.env.NEXT_PUBLIC_INTRA_AUTH_URL!, {
-      ...this.authInfo,
-      grant_type: 'refresh_token',
+    return axios.post(API_ROUTES.REFRESH_TOKEN, {
       refresh_token: refreshToken,
     });
   }
+
+  public async getAccessToken() {
+    const token = await BrowserAPI.getAccessToken();
+    if (token) return token;
+    throw new Error('No access token found');
+  }
+
+  get instance() {
+    return this._instance;
+  }
+
+  get authInfo() {
+    return this._authInfo;
+  }
+
+  private getError(error: any) {
+    if (error.response.data.error && error.response.data.message)
+      error.response.data.error = error.response.data.message;
+    const errorMessage = error.response.data.error;
+    error.response.data.code = this.ERROR_CODES.get(errorMessage) || 0;
+    return error;
+  }
+
+  private readonly ERROR_CODES = new Map<string, number>([
+    ['The access token is invalid', 255],
+    ['No code provided', 256],
+    ['The access token has expired', 257],
+    ['The access token was revoked', 258],
+  ]);
 }
 
 const axiosClient = new AxiosClient();

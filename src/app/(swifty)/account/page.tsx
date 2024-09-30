@@ -1,17 +1,50 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Avatar, Card, Badge, Chip } from '@nextui-org/react';
 import { useAuth } from '@/context/auth-provider';
 import BrowserAPI from '@/lib/browser.api';
 import { useRouter } from 'next/navigation';
+import axiosClient from '@/lib/axios';
+import { mapUser } from '@/utilities/map-user';
+import { Spinner } from '@nextui-org/spinner';
 
 export default function AccountPage() {
   const { user, setUser } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
   const { push } = useRouter();
 
   useEffect(() => {
-    console.log(user);
-  }, [user]);
+    if (!user) {
+      BrowserAPI.getAccessToken().then((token) => {
+        if (!token) push('/login');
+        axiosClient
+          .getUser()
+          .then((res) => {
+            const IntraUser = mapUser(res.data);
+            setUser(IntraUser);
+            setIsLoading(false);
+          })
+          .catch((error: any) => {
+            console.error(error.response.data);
+            if (
+              error.response.data.code == 255 ||
+              error.response.data.code == 258
+            ) {
+              BrowserAPI.clearTokens().then(() => push('/login'));
+            } else if (error.response.data.code == 257) {
+              axiosClient.refreshToken().then((res) => {
+                BrowserAPI.setTokens(
+                  res.data.access_token,
+                  res.data.refresh_token
+                );
+              });
+            }
+          });
+      });
+    } else {
+      console.info('User:', user);
+    }
+  });
 
   const projectStatusColor = (status: string) => {
     if (status == 'finished') return 'success';
@@ -25,8 +58,15 @@ export default function AccountPage() {
     BrowserAPI.clearTokens().then(() => push('/'));
   };
 
+  if (isLoading)
+    return (
+      <div className="w-full h-screen flex items-center justify-center bg-white">
+        <Spinner />
+      </div>
+    );
+
   return (
-    <div className="bg-gray-100 max-w-md min-h-screen relative">
+    <div className="bg-gray-100 w-full min-h-screen relative">
       <Card className="mx-auto">
         <Card>
           <div className="flex flex-row items-center space-x-4 pb-2 px-2">
@@ -115,7 +155,7 @@ export default function AccountPage() {
           </div>
         </Card>
       </Card>
-      <div className="w-full max-w-md min-h-10 bg-slate-400/80 backdrop-blur-md fixed bottom-0 ">
+      <div className="w-full min-h-10 bg-slate-400/80 backdrop-blur-md fixed bottom-0 ">
         <ul className="h-full flex items-center">
           <li className="w-1/2 p-2 bg-blue-600/80 text-center">Profil</li>
           <li className="w-1/2 p-2 text-center" onClick={handleLogout}>

@@ -1,4 +1,4 @@
-import { IUser } from '@/types/IUser';
+import { IUser } from '@/types/interfaces/IUser';
 import { createContext } from 'react';
 
 interface IAuthContext {
