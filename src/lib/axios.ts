@@ -16,7 +16,7 @@ class AxiosClient {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
       },
-      withCredentials: true,
+      withCredentials: false,
     });
 
     this.authInfo = {
