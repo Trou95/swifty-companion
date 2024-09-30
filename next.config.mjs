@@ -4,12 +4,12 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  output: 'export',
+  //output: 'export',
   async headers() {
     return [
       {
         // matching all API routes
-        source: '*',
+        source: '/login',
         headers: [
           { key: 'Access-Control-Allow-Credentials', value: 'true' },
           { key: 'Access-Control-Allow-Origin', value: '*' },
