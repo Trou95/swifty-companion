@@ -1,15 +1,13 @@
 // pages/api/route.ts
 
-import type { NextApiRequest } from 'next';
 import { mapUser } from '@/utilities/map-user';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   const res = await req.json();
   const { code } = res;
   console.log('code:', code);
   try {
-    // First API call to fetch the token
     const tokenResponse = await fetch(process.env.NEXT_PUBLIC_INTRA_AUTH_URL!, {
       method: 'POST',
       headers: {
@@ -36,7 +34,6 @@ export async function POST(req: Request) {
     const accessToken = tokenData.access_token;
     const refreshToken = tokenData.refresh_token;
 
-    // Second API call to fetch user data
     const userResponse = await fetch('https://api.intra.42.fr/v2/me', {
       method: 'GET',
       headers: {
@@ -53,10 +50,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Map the user data if necessary
-    const user = mapUser(userData); // Burada mapUser fonksiyonunu tanımlamanız gerekiyor.
+    const user = mapUser(userData);
 
-    // Return the token and user data to the client
     return NextResponse.json(
       { accessToken, refreshToken, user },
       { status: 200 }
