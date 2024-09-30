@@ -12,7 +12,9 @@ class AxiosClient {
   constructor() {
     this.instance = axios.create({
       baseURL: process.env.NEXT_PUBLIC_INTRA_API_URL,
-      headers: {},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       //withCredentials: true,
     });
 
