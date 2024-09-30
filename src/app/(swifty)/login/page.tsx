@@ -22,37 +22,19 @@ export default function LoginPage() {
         console.log(process.env.NEXT_PUBLIC_AUTH_URL);
         push(process.env.NEXT_PUBLIC_AUTH_URL!);
       } else {
-        console.log('Code: ', code);
-        fetch(process.env.NEXT_PUBLIC_INTRA_AUTH_URL!, {
+        fetch('/api/token', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
-            client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
-            code: code,
-            grant_type: 'authorization_code',
-            redirect_uri: 'https://swifty-companion.vercel.app/login',
-          }),
+          body: JSON.stringify({ code }),
         })
           .then((response) => response.json())
           .then((data) => {
             console.log('token', data);
-            setAccessToken(data.access_token);
-            BrowserAPI.setTokens(data.access_token, data.refresh_token);
-
-            fetch('https://api.intra.42.fr/v2/me', {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${data.access_token}`,
-              },
-            })
-              .then((response) => response.json())
-              .then((userData) => {
-                const user = mapUser(userData);
-                setUser(user);
-              });
+            setAccessToken(data.accessToken);
+            setUser(data.user);
+            BrowserAPI.setTokens(data.accessToken, data.refreshToken);
           })
           .catch((error) => console.error('Error:', error));
       }
