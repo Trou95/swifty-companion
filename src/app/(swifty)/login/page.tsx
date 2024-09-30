@@ -17,7 +17,8 @@ export default function LoginPage() {
     if (user) return push('/account');
 
     const token = localStorage.getItem('access_token');
-    if (!token) {
+    if (token) push('/account');
+    else {
       const code = searchParams.get('code');
       if (!code) {
         push(process.env.NEXT_PUBLIC_AUTH_URL!);
