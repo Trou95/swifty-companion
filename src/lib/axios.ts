@@ -14,6 +14,7 @@ class AxiosClient {
       baseURL: process.env.NEXT_PUBLIC_INTRA_API_URL,
       headers: {
         'Content-Type': 'application/json',
+        cache: 'no-cache',
       },
       //withCredentials: true,
     });
