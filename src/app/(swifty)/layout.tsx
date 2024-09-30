@@ -14,6 +14,7 @@ export default function Layout({
   const { user, setUser } = useAuth();
   const { push } = useRouter();
   useEffect(() => {
+    return;
     BrowserAPI.getAccessToken().then((token) => {
       if (token == null) push('/login');
     });
