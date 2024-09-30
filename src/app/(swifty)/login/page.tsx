@@ -20,8 +20,9 @@ export default function LoginPage() {
       const code = searchParams.get('code');
       if (!code) {
         console.log(process.env.NEXT_PUBLIC_AUTH_URL);
-        window.location.href = process.env.NEXT_PUBLIC_AUTH_URL!;
+        push(process.env.NEXT_PUBLIC_AUTH_URL!);
       } else {
+        console.log('Code: ', code);
         fetch(process.env.NEXT_PUBLIC_INTRA_AUTH_URL!, {
           method: 'POST',
           headers: {
