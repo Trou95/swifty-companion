@@ -1,9 +1,9 @@
-import axios, { Axios, AxiosResponse } from '@/lib/axios';
 import { IAuthRequest } from '@/types/interfaces/IAuthRequest';
 import { ITokenResponse } from '@/types/interfaces/ITokenResponse';
 import { IIntraUser } from '@/types/interfaces/IIntraUser';
 import BrowserAPI from './browser.api';
 import { API_ROUTES } from '@/types/enums/api-routes';
+import axios, { Axios, AxiosResponse } from 'axios';
 
 class AxiosClient {
   private readonly _instance: Axios;
@@ -27,7 +27,7 @@ class AxiosClient {
     };
 
     this._instance.interceptors.response.use(
-      function (response) {
+      function (response: any) {
         return response;
       },
       function (error: any) {
