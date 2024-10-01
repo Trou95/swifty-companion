@@ -6,7 +6,7 @@ Accept-Language: en-US,en;q=0.5
 {
     "grant_type": "refresh_token",
     "client_id":"u-s4t2ud-4429bf366ad8c4ed916c245b37016b86b6c9674af8518b7ec528422936eec488",
-    "client_secret":"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",
+    "client_secret":"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",
     "refresh_token":"43b67659c76944d2427f37e190ef25ee853a4e7b761006ab2441aa5c0f859e17",
     "redirect_uri":"https://swifty-companion.vercel.app/login"
 }

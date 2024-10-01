@@ -1,0 +1,11 @@
+
+POST https://api.intra.42.fr/oauth/token
+Content-Type: application/json
+
+{
+  "grant_type": "authorization_code",
+  "client_id":"u-s4t2ud-4429bf366ad8c4ed916c245b37016b86b6c9674af8518b7ec528422936eec488",
+  "client_secret":"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",
+  "code":"70c4780a15868c978695625af7a2dc5807fa895ddb9773ddc3ed0193341c72be",
+  "redirect_uri":"http://localhost:4242"
+}

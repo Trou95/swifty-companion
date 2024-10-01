@@ -32,7 +32,6 @@ class AxiosClient {
       },
       function (error: any) {
         if (typeof window === 'undefined') {
-          //console.log(error.response);
           if (error.response.status == 401) {
             return Promise.reject(error);
           }
@@ -99,7 +98,7 @@ class AxiosClient {
   private readonly ERROR_CODES = new Map<string, number>([
     ['The access token is invalid', 255],
     ['No code provided', 256],
-    ['The access token has expired', 257],
+    ['The access token expired', 257],
     ['The access token was revoked', 258],
   ]);
 }
