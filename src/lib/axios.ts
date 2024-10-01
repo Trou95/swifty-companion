@@ -1,4 +1,4 @@
-import axios, { Axios, AxiosResponse } from 'axios';
+import axios, { Axios, AxiosResponse } from '@/lib/axios';
 import { IAuthRequest } from '@/types/interfaces/IAuthRequest';
 import { ITokenResponse } from '@/types/interfaces/ITokenResponse';
 import { IIntraUser } from '@/types/interfaces/IIntraUser';
