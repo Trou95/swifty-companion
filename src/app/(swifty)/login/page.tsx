@@ -16,25 +16,22 @@ export default function LoginPage() {
   useEffect(() => {
     if (user) return push('/account');
 
-    const token = localStorage.getItem('access_token');
-    if (token) push('/account');
-    else {
+    (async () => {
+      const token = await BrowserAPI.getAccessToken();
+      if (token) return push('/account');
+
       const code = searchParams.get('code');
-      if (!code) {
-        push(process.env.NEXT_PUBLIC_AUTH_URL!);
-      } else {
-        axiosClient
-          .Authenticate(code)
-          .then((res) => {
-            BrowserAPI.setTokens(res.data.access_token, res.data.refresh_token);
-            push('/account');
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+      if (!code) return push(process.env.NEXT_PUBLIC_AUTH_URL!);
+
+      try {
+        const res = (await axiosClient.Authenticate(code)).data;
+        await BrowserAPI.setTokens(res.access_token, res.refresh_token);
+        push('/account');
+      } catch (error) {
+        console.error(error);
       }
-    }
-  }, [user]);
+    })();
+  });
 
   return (
     <div className="w-full h-screen flex items-center justify-center bg-white">

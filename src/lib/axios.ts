@@ -43,9 +43,7 @@ class AxiosClient {
     );
   }
 
-  public async Authenticate(
-    code: string
-  ): Promise<AxiosResponse<ITokenResponse>> {
+  public async Authenticate(code: string): Promise<AxiosResponse<ITokenResponse>> {
     try {
       const tokenResponse = await axios.post(API_ROUTES.TOKEN, {
         code,
@@ -69,7 +67,7 @@ class AxiosClient {
     }
   }
 
-  public async refreshToken() {
+  public async refreshToken(): Promise<AxiosResponse<ITokenResponse>> {
     const refreshToken = await BrowserAPI.getRefreshToken();
     return axios.post(API_ROUTES.REFRESH_TOKEN, {
       refresh_token: refreshToken,

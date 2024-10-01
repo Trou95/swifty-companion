@@ -15,32 +15,25 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (!user) {
-      BrowserAPI.getAccessToken().then((token) => {
-        if (!token) push('/login');
-        axiosClient
-          .getUser()
-          .then((res) => {
-            const IntraUser = mapUser(res.data);
-            setUser(IntraUser);
-            setIsLoading(false);
-          })
-          .catch((error: any) => {
-            console.error(error.response.data);
-            if (
-              error.response.data.code == 255 ||
-              error.response.data.code == 258
-            ) {
-              BrowserAPI.clearTokens().then(() => push('/login'));
-            } else if (error.response.data.code == 257) {
-              axiosClient.refreshToken().then((res) => {
-                BrowserAPI.setTokens(
-                  res.data.access_token,
-                  res.data.refresh_token
-                );
-              });
-            }
-          });
-      });
+      (async () => {
+        const accessToken = await BrowserAPI.getAccessToken();
+        if (!accessToken) return push('/login');
+
+        try {
+          const res = await axiosClient.getUser();
+          const IntraUser = mapUser(res.data);
+          setUser(IntraUser);
+          setIsLoading(false);
+        } catch (error: any) {
+          console.error(error.response.data);
+          if (error.response.data.code == 255 || error.response.data.code == 258)
+            BrowserAPI.clearTokens().then(() => push('/login'));
+          else if (error.response.data.code == 257) {
+            const tokens = await axiosClient.refreshToken();
+            await BrowserAPI.setTokens(tokens.data.access_token, tokens.data.refresh_token);
+          }
+        }
+      })();
     } else {
       console.info('User:', user);
     }
@@ -76,9 +69,7 @@ export default function AccountPage() {
               className="w-20 h-20 text-large"
             />
             <div>
-              <h2 className="text-xl font-bold text-teal-700">
-                {user?.fullName}
-              </h2>
+              <h2 className="text-xl font-bold text-teal-700">{user?.fullName}</h2>
               <p className="text-gray-500">@{user?.login}</p>
               <div className="mt-2">
                 <Badge color="primary" variant="flat">
@@ -89,9 +80,7 @@ export default function AccountPage() {
           </div>
           <div className="space-y-6 mt-4">
             <div className="max-h-[500px] overflow-y-auto">
-              <h2 className="text-lg font-semibold text-teal-700 mb-2">
-                Projects
-              </h2>
+              <h2 className="text-lg font-semibold text-teal-700 mb-2">Projects</h2>
               <ul className="space-y-3">
                 {user?.projects
                   .filter((p) => !p.name.includes('Piscine'))
@@ -100,18 +89,10 @@ export default function AccountPage() {
                     return 0;
                   })
                   .map((project) => (
-                    <li
-                      key={project.name}
-                      className="bg-white p-3 rounded-lg shadow-sm"
-                    >
+                    <li key={project.name} className="bg-white p-3 rounded-lg shadow-sm">
                       <div className="flex justify-between items-center mb-1">
-                        <h3 className="font-medium text-teal-600">
-                          {project.name}
-                        </h3>
-                        <Chip
-                          color={projectStatusColor(project.status)}
-                          variant="bordered"
-                        >
+                        <h3 className="font-medium text-teal-600">{project.name}</h3>
+                        <Chip color={projectStatusColor(project.status)} variant="bordered">
                           {project.status}
                         </Chip>
                       </div>
@@ -131,9 +112,7 @@ export default function AccountPage() {
                           >
                             {project.final_mark}
                           </span>
-                          <span className="text-sm text-gray-500 ml-1">
-                            /100
-                          </span>
+                          <span className="text-sm text-gray-500 ml-1">/100</span>
                         </div>
                       </div>
                     </li>
@@ -141,9 +120,7 @@ export default function AccountPage() {
               </ul>
             </div>
             <div className="p-2">
-              <h2 className="text-lg font-semibold text-teal-700 mb-2">
-                Skills
-              </h2>
+              <h2 className="text-lg font-semibold text-teal-700 mb-2">Skills</h2>
               <div className="flex flex-wrap gap-2">
                 {user?.skills.map((skill) => (
                   <Chip key={skill.name} color="primary" variant="flat">

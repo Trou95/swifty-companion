@@ -10,14 +10,11 @@ export async function POST(req: Request) {
   }
 
   try {
-    const tokenResponse = await axios.post(
-      process.env.NEXT_PUBLIC_INTRA_AUTH_URL!,
-      {
-        client_id: process.env.NEXT_PUBLIC_INTRA_CLIENT_ID,
-        grant_type: 'refresh_token',
-        refresh_token: refresh_token,
-      }
-    );
+    const tokenResponse = await axios.post(process.env.NEXT_PUBLIC_INTRA_AUTH_URL!, {
+      client_id: process.env.NEXT_PUBLIC_INTRA_CLIENT_ID,
+      grant_type: 'refresh_token',
+      refresh_token: refresh_token,
+    });
     return NextResponse.json(tokenResponse.data, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(error.response.data, { status: 400 });

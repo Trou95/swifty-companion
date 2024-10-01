@@ -3,6 +3,7 @@ import { IUser } from '@/types/interfaces/IUser';
 
 export const mapUser = (user: IIntraUser): IUser => {
   const cursusUser = user.cursus_users[1];
+
   return {
     id: user.id,
     login: user.login,
