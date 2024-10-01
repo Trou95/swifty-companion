@@ -11,7 +11,7 @@ import { Spinner } from '@nextui-org/spinner';
 export default function AccountPage() {
   const { user, setUser } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const { push } = useRouter();
+  const { push, refresh } = useRouter();
 
   useEffect(() => {
     if (!user) {
@@ -31,6 +31,7 @@ export default function AccountPage() {
           else if (error.response.data.code == 257) {
             const tokens = await axiosClient.refreshToken();
             await BrowserAPI.setTokens(tokens.data.access_token, tokens.data.refresh_token);
+            refresh();
           }
         }
       })();
