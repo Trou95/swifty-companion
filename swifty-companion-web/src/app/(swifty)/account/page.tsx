@@ -49,8 +49,8 @@ export default function AccountPage() {
 
   const handleLogout = () => {
     BrowserAPI.clearTokens().then(() => {
-      push('/')
       setUser(null);
+      push('/');
     });
   };
 
