@@ -38,7 +38,7 @@ export default function AccountPage() {
     } else {
       console.info('User:', user);
     }
-  });
+  }, [user]);
 
   const projectStatusColor = (status: string) => {
     if (status == 'finished') return 'success';
