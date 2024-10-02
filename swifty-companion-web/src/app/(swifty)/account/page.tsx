@@ -48,8 +48,8 @@ export default function AccountPage() {
   };
 
   const handleLogout = () => {
-    setUser(null);
     BrowserAPI.clearTokens().then(() => push('/'));
+    setUser(null);
   };
 
   if (isLoading)
